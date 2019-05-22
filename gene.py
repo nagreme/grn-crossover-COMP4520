@@ -16,7 +16,7 @@ class Gene():
     def bind(self, protein):
         self.bound_protein = protein
         if self.product_protein is None:
-            self.product_protein = Protein(self.index, self.product_seq)
+            self.product_protein = Protein(self.index, self.product_seq, zero_concs=True)
 
     def clear_binding(self):
         self.bound_protein = None

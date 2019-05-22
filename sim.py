@@ -16,7 +16,6 @@ def simulate(pop):
                 grn.push_initial_proteins()
 
             grn.bind()
-            grn.regulate()
             grn.produce()
             grn.diffuse()
             grn.decay()
