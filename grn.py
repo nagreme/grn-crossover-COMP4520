@@ -129,9 +129,11 @@ class Grn():
         self._diffuse(self.internal_proteins)
         self._diffuse(self.output_proteins)
 
-    #this method implements a discritized differential equation to do the actual diffusion
+    #This method implements a discritized differential equation to do the actual diffusion
+    #This approach was adapted from the "Forward Euler scheme" described here:
+    #http://hplgit.github.io/num-methods-for-PDEs/doc/pub/diffu/sphinx/._main_diffu001.html
     def _diffuse(self, proteins):
-        F = 0.3 #"flow" differential equation constant - controls the viscosity of the liquid that's diffusing
+        F = 0.3 #a "physical" constant used to control the behaviour of the liquid that's diffusing
         #these parameters control the left/right balance of the diffusion. If one is higher, more protein diffuses
         #in that direction (like a wave).
         right = 1.0
