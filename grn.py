@@ -11,7 +11,7 @@ class Grn():
     def __init__(self):
         #current fitness of the network
         #right now, this is a value between 0 and 10
-        #note: by convention, fitness is minimized in evolutionary algs (0 = best fitness, 100 = worst fitness)
+        #note: by convention, fitness is minimized in evolutionary algs (0 = best fitness, 10 = worst fitness)
         #I'm initializing to the illegal value -1 here to indicate that the fitness hasn't been evaluated yet
         #it will be updated after the simulation is finished (see sim.eval_fitness())
         self.fitness = -1
