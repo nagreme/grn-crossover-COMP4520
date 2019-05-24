@@ -2,10 +2,10 @@
 #These values remain fixed throughout the simulation.
 class Config():
     #self-explanetory parameters
-    pop_size = 10
+    pop_size = 2
     num_genes = 8
     num_initial_proteins = 4
-    sim_steps = 5
+    sim_steps = 2
     
     #number of bits in a protein sequence, binding sequence, or output sequence
     num_protein_bits = 4

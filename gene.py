@@ -44,7 +44,6 @@ class Gene():
         self.bound_protein = None
         self.product_protein = None
 
-
     #checks to see if the given protein would meet the criteria for binding to this gene
     #returns true or false
     def can_bind(self, protein):

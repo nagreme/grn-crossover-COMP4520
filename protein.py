@@ -33,7 +33,8 @@ class Protein():
 
         #note: a protein may have more than one source gene (i.e. two genes may produce the same protein)
         #use a set to prevent duplicates and provide lookup in constant time
-        self.srcs = set( (src,) )
+        self.srcs = set()
+        self.srcs.add(src)
 
     def add_src(self, src):
         self.srcs.add(src)

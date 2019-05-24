@@ -9,6 +9,13 @@ import copy
 #This class represents a single gene regulatory network
 class Grn():
     def __init__(self):
+        #current fitness of the network
+        #right now, this is a value between 0 and 10
+        #note: by convention, fitness is minimized in evolutionary algs (0 = best fitness, 100 = worst fitness)
+        #I'm initializing to the illegal value -1 here to indicate that the fitness hasn't been evaluated yet
+        #it will be updated after the simulation is finished (see sim.eval_fitness())
+        self.fitness = -1
+        
         #these proteins bind to other genes (and do not affect program output)
         self.internal_proteins = {}
         
@@ -19,14 +26,24 @@ class Grn():
         self.initial_proteins = {}
         
         #randomly initialize the initial proteins
-        for i in range(Config.num_initial_proteins):
+        #note: we want to make sure we have no duplicate sequences here
+        #purpose of the "tries" var below is just in case we don't have enough protein bits to generate unique combinations within a reasonable timeframe...
+        tries = 0
+        while len(self.initial_proteins) < Config.num_initial_proteins and tries < 100 * Config.num_initial_proteins: 
             seq = Utils.rand_bitvec(Config.num_protein_bits - 1)
             seq.insert(0, 0) #make this an internal protein so that it will bind
-            protein = Protein(-1, seq=seq) #there is no src gene that produced this protein. Use -1 to indicate this
-            
-            #note: if we have duplicate sequences, hashing them like this will eliminate them
-            #the grn will then have fewer initial proteins...that's ok for now
-            self.initial_proteins[protein.seq.to01()] = protein
+
+            if seq.to01() not in self.initial_proteins:
+                protein = Protein(-1, seq=seq) #there is no src gene that produced this protein. Use a -1 to indicate this
+                self.initial_proteins[protein.seq.to01()] = protein
+
+            else:
+                tries += 1
+
+        if len(self.initial_proteins) < Config.num_initial_proteins:
+            print('Unable to generate unique random initial protein sequences.')
+            print('Try increasing the Config.num_protein_bits, or decreasing the number of initial proteins.')
+            exit(1)
 
         #Create the genes and initialze them randomly
         self.genes = []
@@ -43,7 +60,10 @@ class Grn():
             self.internal_proteins[clone.seq.to01()] = clone
 
     #binds internal proteins to genes
+    #returns a list of bind events, where each element is a 2-tuple of the form (protein that bound, gene that it bound to)
     def bind(self):
+        bind_events = []
+        
         #go through every gene in the network and look at the proteins that exist above it
         for pos in range(Config.num_genes):
             gene = self.genes[pos]
@@ -85,11 +105,15 @@ class Grn():
                 #grab the selected protein and bind it to the gene
                 selected = concs_at_pos[index][0]
                 gene.bind(selected)
+                bind_events.append( (selected, gene) )
+                
                 self._add_product_protein(gene)
 
             #if there were no viable proteins above the current gene, clear any existing binding from previous iteration
             else:
                 gene.clear_binding()
+
+        return bind_events
 
     #goes through the genes and checks to see if any of them have activated
     def _add_product_protein(self, gene):
@@ -97,11 +121,11 @@ class Grn():
             #check if protein already exists in this grn - if so, just add the current gene as a src
             key = gene.product_seq.to01()
             if key in self.internal_proteins:
-                self.internal_proteins[key].add_src(pos)
+                self.internal_proteins[key].add_src(gene.index)
                 gene.product_protein = self.internal_proteins[key]
 
             elif key in self.output_proteins:
-                self.output_proteins[key].add_src(pos)
+                self.output_proteins[key].add_src(gene.index)
                 gene.product_protein = self.output_proteins[key]
 
             #otherwise protein has not yet been inserted into this Grn, so do that
@@ -114,7 +138,10 @@ class Grn():
             
 
     #causes active genes to product their output protein
+    #returns a list of production events, where each element is a 2-tuple of the form (gene that produced, protein that was produced)
     def produce(self):
+        produce_events = []
+        
         for pos in range(Config.num_genes):
             gene = self.genes[pos]
             if gene.product_protein is not None:
@@ -123,6 +150,9 @@ class Grn():
                 #We need to clamp to make sure the conc stays between 0 and 1.
                 #Note: the protein will diffuse into the neighbouring positions in the following timestamps (see diffuse())
                 protein.concs[pos] = Utils.clamp(protein.concs[pos] + gene.production_rate, 0.0, 1.0)
+                produce_events.append( (gene, protein) )
+
+        return produce_events
 
     #causes the proteins to "spread outward" from the src gene that produced them
     def diffuse(self):
