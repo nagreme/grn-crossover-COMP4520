@@ -3,6 +3,7 @@ from bitarray import bitarray
 from utils import Utils
 from protein import *
 from gene import Gene
+from collections import OrderedDict
 import numpy as np
 import copy
 
@@ -23,7 +24,10 @@ class Grn():
         self.output_proteins = {}
         
         #these proteins are injected into the GRN at the start of the regulatory simulation
-        self.initial_proteins = {}
+        #I'm using an ordered dictionary here - it works just like a regular dictionary, except you can iterate
+        #through it in a fixed order (like an array). This should make it a little easier to split the container in half
+        #when you're doing crossover.
+        self.initial_proteins = OrderedDict()
         
         #randomly initialize the initial proteins
         #note: we want to make sure we have no duplicate sequences here
