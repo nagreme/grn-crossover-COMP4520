@@ -59,14 +59,23 @@ def std_crossover(pop):
     # this should probably be handled by the caller that's building the next generation population
 
     # roulette wheel selection of parents form pop
-    select_parents(pop)
+    p1, p2 = select_parents(pop)
 
     # perform crossover, contruct two children
     # pick random indexm split parent gene arrays and initial proteins at that point
+    split_index = random.randint(0, num_genes)
+
     # create two new grns and give them half and half
+    c1 = Grn()
+    c2 = Grn()
+
+    # add stuff to children
+
+    # adjust protein indices (in second half) (Gene.index) 
 
 
 # use roulette wheel selection (slice size proportional to fitness) (implemented with replacement)
+# returns the Grn objects that are the selected parents
 def select_parents(pop):
     # this creates a new list, alternatively use pop.sort() to sort in place
     sorted_pop = sorted(pop, key=lambda x: x.fitness, reverse=True)
@@ -105,7 +114,7 @@ def select_parents(pop):
             p2_index = index
             p2_found = True
 
-    return p1_index, p2_index
+    return sorted_pop[p1_index], sorted_pop[p2_index]
 
 
 def print_bind_events(events):
