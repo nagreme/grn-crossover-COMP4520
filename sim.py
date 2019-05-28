@@ -1,5 +1,6 @@
 from config import Config
 from grn import Grn
+from numpy import random
 
 def main():
     pop = []
@@ -65,16 +66,46 @@ def std_crossover(pop):
     # create two new grns and give them half and half
 
 
-# use roulette wheel selection (slice size proportional to fitness)
+# use roulette wheel selection (slice size proportional to fitness) (implemented with replacement)
 def select_parents(pop):
     # this creates a new list, alternatively use pop.sort() to sort in place
     sorted_pop = sorted(pop, key=lambda x: x.fitness, reverse=True)
-    # find total (sum) fitness
-    # get random val (spin the wheel)
-    # got through individuals from most to least fit, normalize value
-    # see if the wheel landed in their chunk
 
-    return 0
+    # find total (sum) fitness
+    fitness_sum = 0
+
+    for individual in sorted_pop:
+        fitness_sum += individual.fitness
+
+    # get random vals for each parent (spin the wheel)
+    p1 = random.random()
+    p2 = random.random()
+
+    # keep track with flags
+    p1_found = False
+    p2_found = False
+
+    p1_index = -1
+    p2_index = -1
+
+    # go through individuals from most to least fit grn, normalize value (this value is the size of their wheel chunk)
+    index = -1 # index of current grn
+    cutoff = 0 # where we're at in the wheel
+
+    # keep going until we find both parents
+    while not (p1_found and p2_found):
+        index += 1
+        cutoff += sorted_pop[index].fitness / fitness_sum
+
+        if  not p1_found and p1 < cutoff:
+            p1_index = index
+            p1_found = True
+
+        if  not p2_found and p2 < cutoff:
+            p2_index = index
+            p2_found = True
+
+    return p1_index, p2_index
 
 
 def print_bind_events(events):
