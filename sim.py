@@ -22,7 +22,7 @@ def simulate(pop):
                 grn.push_initial_proteins()
 
             #The simulation consists of four steps:
-            
+
             #first, we allow proteins to bind to genes
             bind_events = grn.bind()
             print_bind_events(bind_events)
@@ -52,7 +52,31 @@ def eval_fitness(pop):
         #fitness value will be between 0 and 10
         #note: by convention, fitness is minimized in evolutionary algs (0 = best fitness, 10 = worst fitness)
         grn.fitness = max(10 - len(grn.output_proteins), 0)
-            
+
+def std_crossover(pop):
+    # do we always do crossovers or do we have some probability of doing them? this parameter should be placed in the config file
+    # this should probably be handled by the caller that's building the next generation population
+
+    # roulette wheel selection of parents form pop
+    select_parents(pop)
+
+    # perform crossover, contruct two children
+    # pick random indexm split parent gene arrays and initial proteins at that point
+    # create two new grns and give them half and half
+
+
+# use roulette wheel selection (slice size proportional to fitness)
+def select_parents(pop):
+    # this creates a new list, alternatively use pop.sort() to sort in place
+    sorted_pop = sorted(pop, key=lambda x: x.fitness, reverse=True)
+    # find total (sum) fitness
+    # get random val (spin the wheel)
+    # got through individuals from most to least fit, normalize value
+    # see if the wheel landed in their chunk
+
+    return 0
+
+
 def print_bind_events(events):
     for (protein, gene) in events:
         print('  Protein {} bound to Gene {}'.format(protein.seq.to01(), gene.index))
@@ -66,5 +90,5 @@ def print_produce_events(events):
 
     if not events:
         print('  No produce events')
-            
+
 main()
