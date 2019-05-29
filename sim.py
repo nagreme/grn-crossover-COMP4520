@@ -60,18 +60,45 @@ def std_crossover(pop):
 
     # roulette wheel selection of parents form pop
     p1, p2 = select_parents(pop)
+    # p1 and p2 are Grn objects
 
     # perform crossover, contruct two children
-    # pick random indexm split parent gene arrays and initial proteins at that point
-    split_index = random.randint(0, num_genes)
 
     # create two new grns and give them half and half
     c1 = Grn()
     c2 = Grn()
+    # add stuff to children (genes and initial proteins)
 
-    # add stuff to children
+    # pick random indexm split parent gene arrays and initial proteins at that point
+    split_index = random.randint(0, Config.num_genes)
 
-    # adjust protein indices (in second half) (Gene.index) 
+    c1.genes = p1.genes[0:split_index] + p2.genes[split_index:]
+    c2.genes = p2.genes[0:split_index] + p1.genes[split_index:]
+
+    split_index = random.randint(0, Config.num_initial_proteins)
+
+    # pull the keys out of the ordered dict
+    # can't use .keys() because it returns an odict_keys object that doesn't support indexing
+    p1_prot_list = list(p1.initial_proteins)
+    p2_prot_list = list(p2.initial_proteins)
+
+    for i in range(0,num_initial_proteins):
+        # pull out next initial protein
+        p1_prot = p1.initial_proteins[p1_prot_list[i]]
+        p2_prot = p2.initial_proteins[p2_prot_list[i]]
+
+        # should I create a new Protein or not? should be alright not to right?
+
+        if i < split_index:
+            c1.initial_proteins[p1_prot_list[i]] = p1_prot
+            c2.initial_proteins[p2_prot_list[i]] = p2_prot
+        else:
+            c1.initial_proteins[p2_prot_list[i]] = p2_prot
+            c2.initial_proteins[p1_prot_list[i]] = p1_prot
+
+
+    # adjust gene indices (in second half) (Gene.index)
+    # not required for now since crossing over is equal and the number of genes is fixed?
 
 
 # use roulette wheel selection (slice size proportional to fitness) (implemented with replacement)
