@@ -113,8 +113,9 @@ def std_crossover(pop):
     # print("gene split index:", split_index)
     # print()
 
-    #TODO
-    # If I don't create new genes they keep their bound proteins
+    #TODO: Currently genes in the children keep their bound proteins:
+    # I could null these if the parent doent' need them anymore (depends on the simulation process)
+    # Or I could create new gene objects and manually set the binding and product sequences (and bind thresh and production rate)
 
     c1.genes = p1.genes[0:split_index] + p2.genes[split_index:]
     c2.genes = p2.genes[0:split_index] + p1.genes[split_index:]
