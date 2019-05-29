@@ -1,6 +1,7 @@
 from config import Config
 from grn import Grn
 from numpy import random
+from collections import OrderedDict
 
 def main():
     pop = []
@@ -8,6 +9,28 @@ def main():
         pop.append(Grn())
 
     simulate(pop)
+
+    print("Population")
+    print(pop[0])
+    print()
+    print(pop[1])
+    print()
+    print(pop[2])
+    print()
+
+    print("Crossover")
+    print()
+    c1,c2 = std_crossover(pop)
+
+    print("Children")
+    print(c1)
+    print(c1.initial_proteins)
+    print()
+    print(c2)
+    print(c2.initial_proteins)
+    print()
+
+
 
 #runs the regulatory simulation on the population
 def simulate(pop):
@@ -62,6 +85,14 @@ def std_crossover(pop):
     p1, p2 = select_parents(pop)
     # p1 and p2 are Grn objects
 
+    print("Selected parents:")
+    print(p1)
+    print(p1.initial_proteins)
+    print()
+    print(p2)
+    print(p2.initial_proteins)
+    print()
+
     # perform crossover, contruct two children
 
     # create two new grns and give them half and half
@@ -69,25 +100,42 @@ def std_crossover(pop):
     c2 = Grn()
     # add stuff to children (genes and initial proteins)
 
+    # we need to reset the initial proteins since they're randomly generated in the constructor
+    # we could pass a flag to the constructor but I'd rather not change it for now
+    c1.initial_proteins = OrderedDict()
+    c2.initial_proteins = OrderedDict()
+
     # pick random indexm split parent gene arrays and initial proteins at that point
     split_index = random.randint(0, Config.num_genes)
+
+    # Note: split index of zero means no crossing over occurs
+
+    print("gene split index:", split_index)
+    print()
+
+    #TODO
+    # If I don't create new genes they keep their bound proteins
 
     c1.genes = p1.genes[0:split_index] + p2.genes[split_index:]
     c2.genes = p2.genes[0:split_index] + p1.genes[split_index:]
 
     split_index = random.randint(0, Config.num_initial_proteins)
 
+    print("initial prot split index:", split_index)
+    print()
+
+    # TODO: duplicates + dictionaries => children might have less initial proteins 
+
     # pull the keys out of the ordered dict
     # can't use .keys() because it returns an odict_keys object that doesn't support indexing
     p1_prot_list = list(p1.initial_proteins)
     p2_prot_list = list(p2.initial_proteins)
 
-    for i in range(0,num_initial_proteins):
+    for i in range(0, Config.num_initial_proteins):
         # pull out next initial protein
         p1_prot = p1.initial_proteins[p1_prot_list[i]]
         p2_prot = p2.initial_proteins[p2_prot_list[i]]
 
-        # should I create a new Protein or not? should be alright not to right?
 
         if i < split_index:
             c1.initial_proteins[p1_prot_list[i]] = p1_prot
@@ -98,20 +146,23 @@ def std_crossover(pop):
 
 
     # adjust gene indices (in second half) (Gene.index)
-    # not required for now since crossing over is equal and the number of genes is fixed?
+    # not required for now since crossing over is equal and the number of genes is fixed
+
+    return c1,c2
 
 
 # use roulette wheel selection (slice size proportional to fitness) (implemented with replacement)
 # returns the Grn objects that are the selected parents
 def select_parents(pop):
     # this creates a new list, alternatively use pop.sort() to sort in place
-    sorted_pop = sorted(pop, key=lambda x: x.fitness, reverse=True)
+    sorted_pop = sorted(pop, key=lambda x: x.fitness, reverse=False)
 
     # find total (sum) fitness
     fitness_sum = 0
 
     for individual in sorted_pop:
-        fitness_sum += individual.fitness
+        # Recall best fitness = 0, worst fitness = 10
+        fitness_sum += (Config.worst_fitness - individual.fitness)
 
     # get random vals for each parent (spin the wheel)
     p1 = random.random()
@@ -128,10 +179,15 @@ def select_parents(pop):
     index = -1 # index of current grn
     cutoff = 0 # where we're at in the wheel
 
+    print("selecting parents")
+    print(p1,p2)
+    print(0.0)
+
     # keep going until we find both parents
     while not (p1_found and p2_found):
         index += 1
-        cutoff += sorted_pop[index].fitness / fitness_sum
+        cutoff += (Config.worst_fitness - sorted_pop[index].fitness) / fitness_sum
+        print(cutoff)
 
         if  not p1_found and p1 < cutoff:
             p1_index = index
@@ -141,6 +197,7 @@ def select_parents(pop):
             p2_index = index
             p2_found = True
 
+    print()
     return sorted_pop[p1_index], sorted_pop[p2_index]
 
 
