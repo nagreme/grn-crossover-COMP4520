@@ -28,7 +28,7 @@ class Protein():
             self.concs = np.zeros(Config.num_genes)
         else:
             self.concs = np.random.random(Config.num_genes)
-            
+
         self.type = ProteinTypes(self.seq[0]) #the top bit determines the protein's type
 
         #note: a protein may have more than one source gene (i.e. two genes may produce the same protein)
@@ -38,3 +38,9 @@ class Protein():
 
     def add_src(self, src):
         self.srcs.add(src)
+
+    def __repr__(self):
+        return "{}.{}(seq={}, srcs={})".format(self.__module__, type(self).__name__, self.seq, self.srcs)
+
+    def __str__(self):
+        return "Protein: {}".format(self.seq.to01())

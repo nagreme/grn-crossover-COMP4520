@@ -16,24 +16,24 @@ class Grn():
         #I'm initializing to the illegal value -1 here to indicate that the fitness hasn't been evaluated yet
         #it will be updated after the simulation is finished (see sim.eval_fitness())
         self.fitness = -1
-        
+
         #these proteins bind to other genes (and do not affect program output)
         self.internal_proteins = {}
-        
+
         #these proteins affect program output (and do not bind to other genes)
         self.output_proteins = {}
-        
+
         #these proteins are injected into the GRN at the start of the regulatory simulation
         #I'm using an ordered dictionary here - it works just like a regular dictionary, except you can iterate
         #through it in a fixed order (like an array). This should make it a little easier to split the container in half
         #when you're doing crossover.
         self.initial_proteins = OrderedDict()
-        
+
         #randomly initialize the initial proteins
         #note: we want to make sure we have no duplicate sequences here
         #purpose of the "tries" var below is just in case we don't have enough protein bits to generate unique combinations within a reasonable timeframe...
         tries = 0
-        while len(self.initial_proteins) < Config.num_initial_proteins and tries < 100 * Config.num_initial_proteins: 
+        while len(self.initial_proteins) < Config.num_initial_proteins and tries < 100 * Config.num_initial_proteins:
             seq = Utils.rand_bitvec(Config.num_protein_bits - 1)
             seq.insert(0, 0) #make this an internal protein so that it will bind
 
@@ -67,7 +67,7 @@ class Grn():
     #returns a list of bind events, where each element is a 2-tuple of the form (protein that bound, gene that it bound to)
     def bind(self):
         bind_events = []
-        
+
         #go through every gene in the network and look at the proteins that exist above it
         for pos in range(Config.num_genes):
             gene = self.genes[pos]
@@ -88,7 +88,7 @@ class Grn():
                 #The chunk is proportional in size to the amount of protein present over the current gene.
                 #Next, "spin" the wheel to select a protein (i.e. generate a random number and see which chunk's
                 #range it falls into)
-                
+
                 index = 0 #index of current protein from concs_at_pos list
                 #the first protein's chunk will go from 0.0 to the following value (note: we're normalizing on the fly here so that the sum of all of the chunks will be 1 - that's what the division's for)
                 cutoff = concs_at_pos[index][1] / conc_sum_at_pos
@@ -110,7 +110,7 @@ class Grn():
                 selected = concs_at_pos[index][0]
                 gene.bind(selected)
                 bind_events.append( (selected, gene) )
-                
+
                 self._add_product_protein(gene)
 
             #if there were no viable proteins above the current gene, clear any existing binding from previous iteration
@@ -139,13 +139,13 @@ class Grn():
 
                 else:
                     self.output_proteins[gene.product_seq.to01()] = gene.product_protein
-            
+
 
     #causes active genes to product their output protein
     #returns a list of production events, where each element is a 2-tuple of the form (gene that produced, protein that was produced)
     def produce(self):
         produce_events = []
-        
+
         for pos in range(Config.num_genes):
             gene = self.genes[pos]
             if gene.product_protein is not None:
@@ -197,7 +197,7 @@ class Grn():
     #if so, it is removed from the Grn.
     def _decay(self, proteins):
         keys_to_remove = []
-        
+
         for key in proteins:
             protein = proteins[key]
             above_threshold = False
@@ -222,3 +222,10 @@ class Grn():
         #remove the decayed proteins from this grn
         for key in keys_to_remove:
             del proteins[key]
+
+
+    def __repr__(self):
+        return "{}.{}(fitness={}, internal_proteins={}, output_proteins={}, initial_proteins={}, genes={})".format(self.__module, type(self).__name__, self.internal_proteins, self.output_proteins, self.initial_proteins, self.genes)
+
+    def __str__(self):
+        return "GRN: {} (fitness={})".format(self.genes, self.fitness)

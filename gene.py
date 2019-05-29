@@ -49,7 +49,7 @@ class Gene():
     def can_bind(self, protein):
         #find the minimum number of bits that must match in order for binding to occur
         min_affinity = Config.num_protein_bits - Config.binding_seq_play
-        
+
         #Binding Criteria 1: check to see if the protein sequence matches this gene's binding sequence closely enough
         above_affinity = Utils.same_count(self.binding_seq, protein.seq) > min_affinity
 
@@ -58,3 +58,10 @@ class Gene():
 
         #in order for the protein to bind, it must meet both of the above criteria
         return above_affinity and above_threshold
+
+
+    def __repr__(self):
+        return "{}.{}(index={}, binding_seq={}, product_seq={}, bound_protein={}, production_rate={}, bind_threshold={})".format(self.__module__, type(self).__name__, self.binding_seq.to01(), self.product_seq.to01(), self.bound_protein, self.production_rate, self.bind_threshold)
+
+    def __str__(self):
+        return "Gene: {}||{} (bound protein: {})".format(self.binding_seq.to01(), self.product_seq.to01(), self.bound_protein)
