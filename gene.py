@@ -61,7 +61,7 @@ class Gene():
 
 
     def __repr__(self):
-        return "{}.{}(index={}, binding_seq={}, product_seq={}, bound_protein={}, production_rate={}, bind_threshold={})".format(self.__module__, type(self).__name__, self.binding_seq.to01(), self.product_seq.to01(), self.bound_protein, self.production_rate, self.bind_threshold)
+        return "{}.{}(index={}, binding_seq={}, product_seq={}, bound_protein={}, production_rate={}, bind_threshold={})".format(self.__module__, type(self).__name__, self.index, self.binding_seq.to01(), self.product_seq.to01(), self.bound_protein, self.production_rate, self.bind_threshold)
 
     def __str__(self):
         return "Gene: {}||{} (bound protein: {})".format(self.binding_seq.to01(), self.product_seq.to01(), self.bound_protein)

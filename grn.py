@@ -225,7 +225,12 @@ class Grn():
 
 
     def __repr__(self):
-        return "{}.{}(fitness={}, internal_proteins={}, output_proteins={}, initial_proteins={}, genes={})".format(self.__module, type(self).__name__, self.internal_proteins, self.output_proteins, self.initial_proteins, self.genes)
+        return "{}.{}(fitness={}, internal_proteins={}, output_proteins={}, initial_proteins={}, genes={})".format(self.__module__, type(self).__name__, self.fitness, self.internal_proteins, self.output_proteins, self.initial_proteins, self.genes)
 
     def __str__(self):
-        return "GRN: {} (fitness={})".format(self.genes, self.fitness)
+        gene_list = ""
+
+        for gene in self.genes:
+            gene_list += str(gene) + "\n"
+
+        return "GRN (fitness={}):\n{}".format(self.fitness, gene_list)

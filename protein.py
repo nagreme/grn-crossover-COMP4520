@@ -40,7 +40,7 @@ class Protein():
         self.srcs.add(src)
 
     def __repr__(self):
-        return "{}.{}(seq={}, srcs={})".format(self.__module__, type(self).__name__, self.seq, self.srcs)
+        return "{}.{}(seq={}, srcs={})".format(self.__module__, type(self).__name__, self.seq.to01(), self.srcs)
 
     def __str__(self):
         return "Protein: {}".format(self.seq.to01())
