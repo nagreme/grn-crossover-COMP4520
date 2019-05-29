@@ -10,25 +10,25 @@ def main():
 
     simulate(pop)
 
-    print("Population")
-    print(pop[0])
-    print()
-    print(pop[1])
-    print()
-    print(pop[2])
-    print()
-
-    print("Crossover")
-    print()
-    c1,c2 = std_crossover(pop)
-
-    print("Children")
-    print(c1)
-    print(c1.initial_proteins)
-    print()
-    print(c2)
-    print(c2.initial_proteins)
-    print()
+    # print("Population")
+    # print(pop[0])
+    # print()
+    # print(pop[1])
+    # print()
+    # print(pop[2])
+    # print()
+    #
+    # print("Crossover")
+    # print()
+    # c1,c2 = std_crossover(pop)
+    #
+    # print("Children")
+    # print(c1)
+    # print(c1.initial_proteins)
+    # print()
+    # print(c2)
+    # print(c2.initial_proteins)
+    # print()
 
 
 
@@ -85,13 +85,13 @@ def std_crossover(pop):
     p1, p2 = select_parents(pop)
     # p1 and p2 are Grn objects
 
-    print("Selected parents:")
-    print(p1)
-    print(p1.initial_proteins)
-    print()
-    print(p2)
-    print(p2.initial_proteins)
-    print()
+    # print("Selected parents:")
+    # print(p1)
+    # print(p1.initial_proteins)
+    # print()
+    # print(p2)
+    # print(p2.initial_proteins)
+    # print()
 
     # perform crossover, contruct two children
 
@@ -110,8 +110,8 @@ def std_crossover(pop):
 
     # Note: split index of zero means no crossing over occurs
 
-    print("gene split index:", split_index)
-    print()
+    # print("gene split index:", split_index)
+    # print()
 
     #TODO
     # If I don't create new genes they keep their bound proteins
@@ -121,10 +121,10 @@ def std_crossover(pop):
 
     split_index = random.randint(0, Config.num_initial_proteins)
 
-    print("initial prot split index:", split_index)
-    print()
+    # print("initial prot split index:", split_index)
+    # print()
 
-    # TODO: duplicates + dictionaries => children might have less initial proteins 
+    # TODO: duplicates + dictionaries => children might have less initial proteins
 
     # pull the keys out of the ordered dict
     # can't use .keys() because it returns an odict_keys object that doesn't support indexing
@@ -179,9 +179,9 @@ def select_parents(pop):
     index = -1 # index of current grn
     cutoff = 0 # where we're at in the wheel
 
-    print("selecting parents")
-    print(p1,p2)
-    print(0.0)
+    # print("selecting parents")
+    # print(p1,p2)
+    # print(0.0)
 
     # keep going until we find both parents
     while not (p1_found and p2_found):
