@@ -2,6 +2,8 @@ from config import Config
 from grn import Grn
 from numpy import random
 from collections import OrderedDict
+from utils import Utils
+from protein import *
 
 def main():
     pop = []
@@ -125,8 +127,6 @@ def std_crossover(pop):
     # print("initial prot split index:", split_index)
     # print()
 
-    # TODO: duplicates + dictionaries => children might have less initial proteins
-
     # pull the keys out of the ordered dict
     # can't use .keys() because it returns an odict_keys object that doesn't support indexing
     p1_prot_list = list(p1.initial_proteins)
@@ -146,8 +146,10 @@ def std_crossover(pop):
             c2.initial_proteins[p1_prot_list[i]] = p1_prot
 
 
-    # adjust gene indices (in second half) (Gene.index)
-    # not required for now since crossing over is equal and the number of genes is fixed
+
+    # check if both children have enough initial_proteins
+    check_init_prots(c1)
+    check_init_prots(c2)
 
     return c1,c2
 
@@ -188,7 +190,7 @@ def select_parents(pop):
     while not (p1_found and p2_found):
         index += 1
         cutoff += (Config.worst_fitness - sorted_pop[index].fitness) / fitness_sum
-        print(cutoff)
+        # print(cutoff)
 
         if  not p1_found and p1 < cutoff:
             p1_index = index
@@ -198,8 +200,21 @@ def select_parents(pop):
             p2_index = index
             p2_found = True
 
-    print()
+    # print()
     return sorted_pop[p1_index], sorted_pop[p2_index]
+
+
+def check_init_prots(child):
+    # Code copied from grn constructor but without the tries because we really need this to work
+    while len(child.initial_proteins) < Config.num_initial_proteins:
+        print("smaller")
+        print(child.initial_proteins)
+        seq = Utils.rand_bitvec(Config.num_protein_bits - 1)
+        seq.insert(0, 0) # make this an internal protein so that it will bind
+
+        if seq.to01() not in child.initial_proteins:
+            protein = Protein(-1, seq=seq) # there is no src gene that produced this protein. Use a -1 to indicate this
+            child.initial_proteins[protein.seq.to01()] = protein
 
 
 def print_bind_events(events):
