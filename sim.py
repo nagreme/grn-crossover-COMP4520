@@ -109,7 +109,7 @@ def std_crossover(pop):
     c2.initial_proteins = OrderedDict()
 
     # pick random indexm split parent gene arrays and initial proteins at that point
-    split_index = random.randint(0, Config.num_genes)
+    split_index = random.randint(1, Config.num_genes)
 
     # Note: split index of zero means no crossing over occurs
 
@@ -125,7 +125,7 @@ def std_crossover(pop):
         c1.genes[i].bound_protein = None
         c2.genes[i].bound_protein = None
 
-    split_index = random.randint(0, Config.num_initial_proteins)
+    split_index = random.randint(1, Config.num_initial_proteins)
 
     # print("initial prot split index:", split_index)
     # print()
