@@ -4,6 +4,7 @@ from numpy import random
 from collections import OrderedDict
 from utils import Utils
 from protein import *
+from copy import deepcopy
 
 def main():
     pop = []
@@ -115,12 +116,14 @@ def std_crossover(pop):
     # print("gene split index:", split_index)
     # print()
 
-    #TODO: Currently genes in the children keep their bound proteins:
-    # I could null these if the parent doent' need them anymore (depends on the simulation process)
-    # Or I could create new gene objects and manually set the binding and product sequences (and bind thresh and production rate)
+    # I'm using list comprehensions to make deepcopies of the proteins the children are getting
+    c1.genes = [deepcopy(g) for g in p1.genes[0:split_index]] + [deepcopy(g) for g in p2.genes[split_index:]]
+    c2.genes = [deepcopy(g) for g in p2.genes[0:split_index]] + [deepcopy(g) for g in p1.genes[split_index:]]
 
-    c1.genes = p1.genes[0:split_index] + p2.genes[split_index:]
-    c2.genes = p2.genes[0:split_index] + p1.genes[split_index:]
+    # set all children gene bound proteins to None
+    for i in range(Config.num_genes):
+        c1.genes[i].bound_protein = None
+        c2.genes[i].bound_protein = None
 
     split_index = random.randint(0, Config.num_initial_proteins)
 
@@ -207,8 +210,8 @@ def select_parents(pop):
 def check_init_prots(child):
     # Code copied from grn constructor but without the tries because we really need this to work
     while len(child.initial_proteins) < Config.num_initial_proteins:
-        print("smaller")
-        print(child.initial_proteins)
+        # print("smaller")
+        # print(child.initial_proteins)
         seq = Utils.rand_bitvec(Config.num_protein_bits - 1)
         seq.insert(0, 0) # make this an internal protein so that it will bind
 
