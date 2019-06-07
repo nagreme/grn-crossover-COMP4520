@@ -43,4 +43,4 @@ class Protein():
         return "{}.{}(seq={}, srcs={})".format(self.__module__, type(self).__name__, self.seq.to01(), self.srcs)
 
     def __str__(self):
-        return "Protein: {}".format(self.seq.to01())
+        return "P:{}".format(self.seq.to01())
