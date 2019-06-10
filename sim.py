@@ -4,9 +4,9 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 
-IPROT_COLOUR = '#7b67e0'
-PROT_COLOUR = '#67cce0'
-OPROT_COLOUR = '#67e07b'
+INPUT_COLOUR = '#7b67e0' # purple
+INTERNAL_COLOUR = '#67cce0' # blue
+OUTPUT_COLOUR = '#67e07b' # green
 
 
 def main():
@@ -18,6 +18,8 @@ def main():
     graph_colours = []
 
     simulate(pop, graphs, graph_colours)
+
+    print("Purple => Initial proteins\nBlue => Internal proteins and genes\nGreen => Output proteins\n")
 
     for i in range(Config.pop_size):
         # draw_planar is more evenly spaced
@@ -74,12 +76,12 @@ def simulate(pop, graphs, graph_colours):
         # set up colours for the different types of protein
         # recall all the initial proteins are at the beginning of the node list
         # and the output proteins' sequences start with '1'
-        colours = [IPROT_COLOUR for i in range(Config.num_initial_proteins)] + [PROT_COLOUR for i in range(len(DG.nodes)-Config.num_initial_proteins)]
+        colours = [INPUT_COLOUR for i in range(Config.num_initial_proteins)] + [INTERNAL_COLOUR for i in range(len(DG.nodes)-Config.num_initial_proteins)]
 
         node_index = 0
         for node in DG.nodes():
             if 'P:1' in node:
-                colours[node_index] = OPROT_COLOUR
+                colours[node_index] = OUTPUT_COLOUR
             node_index += 1
 
         graph_colours.append(colours)
