@@ -4,9 +4,9 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 
-IPROT_COLOUR = '#678fe0'
+IPROT_COLOUR = '#7b67e0'
 PROT_COLOUR = '#67cce0'
-OPROT_COLOUR = '#67e0b8'
+OPROT_COLOUR = '#67e07b'
 
 
 def main():
@@ -15,14 +15,23 @@ def main():
         pop.append(Grn())
 
     graphs = []
+    graph_colours = []
 
-    simulate(pop, graphs)
+    simulate(pop, graphs, graph_colours)
+
+    for i in range(Config.pop_size):
+        nx.draw_planar(graphs[i], with_labels=True, node_color=graph_colours[i], arrowsize=15, alpha=0.7, edge_color='#555555')
+        # can't get this to print on the figure at a fixed position for some reason...
+        plt.text(-0.7, 0.3, "Fitness: {}".format(pop[i].fitness))
+        print("Fitness: {}".format(pop[i].fitness))
+        plt.show()
+        plt.clf()
 
 
 
 
 #runs the regulatory simulation on the population
-def simulate(pop, graphs):
+def simulate(pop, graphs, graph_colours):
     #we perform the simulation individually on each grn
     for i in range(Config.pop_size):
         print('Running simulation on GRN {}:'.format(i))
@@ -63,17 +72,15 @@ def simulate(pop, graphs):
         # set up colours for the different types of protein
         # recall all the initial proteins are at the beginning of the node list
         # and the output proteins' sequences start with '1'
-        colors = [IPROT_COLOUR for i in range(Config.num_initial_proteins)] + [PROT_COLOUR for i in range(len(DG.nodes)-Config.num_initial_proteins)]
+        colours = [IPROT_COLOUR for i in range(Config.num_initial_proteins)] + [PROT_COLOUR for i in range(len(DG.nodes)-Config.num_initial_proteins)]
 
         node_index = 0
         for node in DG.nodes():
             if 'P:1' in node:
-                colors[node_index] = OPROT_COLOUR
+                colours[node_index] = OPROT_COLOUR
             node_index += 1
 
-        nx.draw(DG, with_labels=True, node_color=colors, arrowsize=15, alpha=0.7, edge_color='#555555')
-        plt.show()
-        plt.clf()
+        graph_colours.append(colours)
 
     #evaluate the fitness of the individuals in the population
     eval_fitness(pop)
