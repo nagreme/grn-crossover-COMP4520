@@ -20,9 +20,11 @@ def main():
     simulate(pop, graphs, graph_colours)
 
     for i in range(Config.pop_size):
+        # draw_planar is more evenly spaced
+        # draw/draw_spring separate components more
         nx.draw_planar(graphs[i], with_labels=True, node_color=graph_colours[i], arrowsize=15, alpha=0.7, edge_color='#555555')
         # can't get this to print on the figure at a fixed position for some reason...
-        plt.text(-0.7, 0.3, "Fitness: {}".format(pop[i].fitness))
+        plt.text(-0.75, 0.3, "Fitness: {}".format(pop[i].fitness))
         print("Fitness: {}".format(pop[i].fitness))
         plt.show()
         plt.clf()
