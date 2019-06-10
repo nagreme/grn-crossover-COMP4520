@@ -4,6 +4,10 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 
+IPROT_COLOUR = '#678fe0'
+PROT_COLOUR = '#67cce0'
+OPROT_COLOUR = '#67e0b8'
+
 
 def main():
     pop = []
@@ -33,6 +37,11 @@ def simulate(pop, graphs):
             if j == 0:
                 grn.push_initial_proteins()
 
+                # add the initial proteins to the graph so we can colour them differently
+                for k in grn.internal_proteins.keys():
+                    DG.add_node('P:'+ k)
+
+
             #The simulation consists of four steps:
 
             #first, we allow proteins to bind to genes
@@ -51,7 +60,18 @@ def simulate(pop, graphs):
 
             print() #print a blank line to separate steps
 
-        nx.draw(DG, with_labels=True, node_color='#99d8e5', arrowsize=15, alpha=0.7, edge_color='#555555')
+        # set up colours for the different types of protein
+        # recall all the initial proteins are at the beginning of the node list
+        # and the output proteins' sequences start with '1'
+        colors = [IPROT_COLOUR for i in range(Config.num_initial_proteins)] + [PROT_COLOUR for i in range(len(DG.nodes)-Config.num_initial_proteins)]
+
+        node_index = 0
+        for node in DG.nodes():
+            if 'P:1' in node:
+                colors[node_index] = OPROT_COLOUR
+            node_index += 1
+
+        nx.draw(DG, with_labels=True, node_color=colors, arrowsize=15, alpha=0.7, edge_color='#555555')
         plt.show()
         plt.clf()
 
@@ -71,16 +91,16 @@ def eval_fitness(pop):
 
 def print_bind_events(events, DG):
     for (protein, gene) in events:
-        print('  Protein {} bound to Gene {}'.format(protein.seq.to01(), gene.index))
-        DG.add_edge(protein, gene)
+        print('  Protein {} bound to Gene {} ({})'.format(protein.seq.to01(), gene.index, gene.binding_seq.to01()))
+        DG.add_edge('P:'+protein.seq.to01(), 'G{}:{}'.format(gene.index, gene.binding_seq.to01()))
 
     if not events:
         print('  No bind events')
 
 def print_produce_events(events, DG):
     for (gene, protein) in events:
-        print('  Gene {} produced Protein {}'.format(gene.index, protein.seq.to01()))
-        DG.add_edge(gene, protein)
+        print('  Gene {} ({}) produced Protein {}'.format(gene.index, gene.binding_seq.to01(), protein.seq.to01()))
+        DG.add_edge('G{}:{}'.format(gene.index, gene.binding_seq.to01()), 'P:'+protein.seq.to01())
 
     if not events:
         print('  No produce events')
